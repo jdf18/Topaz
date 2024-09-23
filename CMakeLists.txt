@@ -23,3 +23,16 @@ install(FILES include/topaz.h
 )
 
 include(CPack)
+
+# * TESTS
+
+enable_testing()
+
+# Create an executable for testing
+add_executable(test_topaz tests/test_topaz.c)
+
+# Link the Topaz library to the test executable
+target_link_libraries(test_topaz PRIVATE Topaz)
+
+# Add the test to CTest
+add_test(NAME TestTopaz COMMAND test_topaz)
