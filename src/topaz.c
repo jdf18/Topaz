@@ -26,7 +26,7 @@ void log_message(Level level, const char* file, int line, const char* func, char
     sprintf(line_buffer, "%d", line);
 
     char empty = '\0';
-    char* values[5];
+    const char* values[5];
     values[0] = &empty;
     values[1] = &empty;
     values[2] = &empty;
@@ -34,13 +34,13 @@ void log_message(Level level, const char* file, int line, const char* func, char
     values[4] = &empty;
 
     if (LOG_FORMAT_FILE_INDEX != 0) {
-        strcpy(values[LOG_FORMAT_FILE_INDEX - 1], file);
+        values[LOG_FORMAT_FILE_INDEX - 1] = file;
     }
     if (LOG_FORMAT_LINE_INDEX != 0) {
         values[LOG_FORMAT_LINE_INDEX - 1] = line_buffer;
     }
     if (LOG_FORMAT_FUNCTION_INDEX != 0) {
-        strcpy(values[LOG_FORMAT_FUNCTION_INDEX - 1], func);
+        values[LOG_FORMAT_FUNCTION_INDEX - 1] = func;
     }
     if (LOG_FORMAT_TIME_INDEX != 0) {
         values[LOG_FORMAT_TIME_INDEX - 1] = time_buffer;
