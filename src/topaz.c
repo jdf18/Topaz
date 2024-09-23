@@ -47,6 +47,6 @@ void log_message(Level level, const char* file, int line, const char* func, char
     }
 
     printf(LOG_FORMAT, values[0], values[1], values[2], values[3], values[4]);
-    printf(format, args);
+    vprintf(format, args);
     printf("\n");
 }
