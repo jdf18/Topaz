@@ -1,5 +1,16 @@
 # ninja log v6
-13	210	7488108644166717	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
-213	372	7488108646158445	libTopaz.a	bea6f78a77e5fd8f
-14	119	7488110462739164	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
-120	207	7488110463797036	libTopaz.a	bea6f78a77e5fd8f
+10	119	7488149729357837	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+120	197	7488149730465452	libTopaz.a	bea6f78a77e5fd8f
+12	379	7488317557632406	build.ninja	e97a8a57f40a192
+9	131	7488318892140081	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+19	128	7488319280309995	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+16	125	7488319377142047	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+12	118	7488319485340541	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+16	125	7488319567438335	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+21	159	7488322578782593	libTopaz.a	bea6f78a77e5fd8f
+33	176	7488322578912583	CMakeFiles/test_topaz.dir/tests/test_topaz.c.obj	dade0d5c23cc99f7
+176	288	7488322580336685	test_topaz.exe	19a49077a558a909
+16	115	7488323177589300	CMakeFiles/test_topaz.dir/tests/test_topaz.c.obj	dade0d5c23cc99f7
+116	227	7488323178587453	test_topaz.exe	19a49077a558a909
+15	117	7488323277990398	CMakeFiles/test_topaz.dir/tests/test_topaz.c.obj	dade0d5c23cc99f7
+118	230	7488323279015869	test_topaz.exe	19a49077a558a909
