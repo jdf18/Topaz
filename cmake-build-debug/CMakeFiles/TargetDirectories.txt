@@ -1,0 +1,9 @@
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/Topaz.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/package.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/package_source.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/list_install_components.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/install.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/install/local.dir
+C:/Users/Jacob/CLionProjects/Topaz/cmake-build-debug/CMakeFiles/install/strip.dir

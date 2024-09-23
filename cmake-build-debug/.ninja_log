@@ -1,0 +1,5 @@
+# ninja log v6
+13	210	7488108644166717	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+213	372	7488108646158445	libTopaz.a	bea6f78a77e5fd8f
+14	119	7488110462739164	CMakeFiles/Topaz.dir/src/topaz.c.obj	90d933678f51e51b
+120	207	7488110463797036	libTopaz.a	bea6f78a77e5fd8f
