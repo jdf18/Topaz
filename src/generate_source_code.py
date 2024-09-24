@@ -91,6 +91,9 @@ void generated_print_strings(char* code, char* path, char* func, char* line) {{
 
 
 def generate_header(levels: dict, src_file_dir):
+    with open(src_file_dir+"/src/topaz.h.txt", 'r') as file:
+        topaz_core = file.read()
+
     template_log_no = '''
 #ifndef TOPAZ_{name}
 #define TOPAZ_{name} {value}
@@ -106,21 +109,18 @@ def generate_header(levels: dict, src_file_dir):
     log_methods = '\n'.join([template_log_method.format(name=k) for k in levels.keys()])
 
     file_contents = f'''
-#ifndef TOPAZ_TOPAZ_LEVELS_H
-#define TOPAZ_TOPAZ_LEVELS_H
-
-#include "topaz.h"    
+{topaz_core}
 
 {log_nos}
 
 
 {log_methods}
 
-#endif
+#endif //TOPAZ_TOPAZ_H
         '''
-    with open("topaz_levels.h", 'w') as file:
+    with open("topaz.h", 'w') as file:
         file.write(file_contents)
-    with open(src_file_dir+"/include/topaz_levels.h", 'w') as file:
+    with open(src_file_dir+"/include/topaz.h", 'w') as file:
         file.write(file_contents)
 
 
