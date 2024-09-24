@@ -3,12 +3,27 @@ project(Topaz VERSION 1.0.0)
 
 #set(CMAKE_C_STANDARD 11)
 
+set(GENERATED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
+
+
+# * ==== COMPILE TOPAZ LIBRARY =====
 add_library(Topaz STATIC
         src/topaz.c
-        include/topaz.h
+        gen/generated_printf_code.c
+)
+
+add_custom_command(
+        OUTPUT ${GENERATED_BINARY_DIR}/generated_printf_code.c ${GENERATED_BINARY_DIR}/topaz_levels.h
+        DEPENDS ${CMAKE_SOURCE_DIR}/logging_conf.json
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/generate_printf.py ${CMAKE_SOURCE_DIR}/logging_conf.json ${GENERATED_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${GENERATED_BINARY_DIR}
+        COMMENT "generating src/generated_printf_code.c"
 )
 
 target_include_directories(Topaz PUBLIC include)
+target_include_directories(Topaz PUBLIC ${GENERATED_BINARY_DIR})
+
+# * ===== LIBRARY INSTALLATION =====
 
 set(CPACK_GENERATOR ZIP TGZ)
 
@@ -24,7 +39,7 @@ install(FILES include/topaz.h
 
 include(CPack)
 
-# * TESTS
+# * ===== TESTING =====
 
 enable_testing()
 
