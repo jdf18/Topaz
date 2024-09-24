@@ -1,6 +1,10 @@
 #ifndef TOPAZ_TOPAZ_H
 #define TOPAZ_TOPAZ_H
 
+// * To use this library, add the following lines to CMakeLists.txt:
+// e.g. add_subdirectory(path/to/topaz)
+//      target_link_libraries(my_app PRIVATE topaz)
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -11,50 +15,60 @@
 #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #endif
 
-// * To use this library, add the following lines to CMakeLists.txt:
-// e.g. add_subdirectory(path/to/topaz)
-//      target_link_libraries(my_app PRIVATE topaz)
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
-// File - Function (Line) - Time: Message
-#define DEFAULT_LOG_FORMAT "[%s] (%s) - [%s]: %s%s"
-// * To overwrite the default log_format include the following line to CMakeLists.txt:
-// There should also always be a total of 5 %s specifiers in the format
-// e.g. add_definitions(-DLOG_FORMAT="[%s] - [%s] - [%s]: %s%s")
 
-// * These values set the order in which the elements are substituted into the log format
-// Setting them to 0 will not display them.
-// e.g. add_definitions(-DLOG_FORMAT_FILE_INDEX=0)
-#ifndef LOG_FORMAT
-#define LOG_FORMAT DEFAULT_LOG_FORMAT
-#endif
-#ifndef LOG_FORMAT_FILE_INDEX
-#define LOG_FORMAT_FILE_INDEX 1
-#endif
-#ifndef LOG_FORMAT_FUNCTION_INDEX
-#define LOG_FORMAT_FUNCTION_INDEX 0
-#endif
-#ifndef LOG_FORMAT_LINE_INDEX
-#define LOG_FORMAT_LINE_INDEX 2
-#endif
-#ifndef LOG_FORMAT_TIME_INDEX
-#define LOG_FORMAT_TIME_INDEX 3
+// * Set the default time format
+#ifndef TOPAZ_TIME_FORMAT
+#define TOPAZ_TIME_FORMAT "%Y-%m-%d %H:%M:%S"
 #endif
 
-typedef enum {
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR
-} Level;
+// * Set default value for runtime logging level changes
+#ifndef TOPAZ_RUNTIME_LEVEL_CHANGE
+#define TOPAZ_RUNTIME_LEVEL_CHANGE 1
+#endif
 
-extern Level application_logging_level;
-void set_application_logging_level(Level level);
+// Runtime logging level
+#if (TOPAZ_RUNTIME_LEVEL_CHANGE == 1)
+extern int application_logging_level;
+#endif
+void set_application_logging_level(int level);
 
-void log_message(Level level, const char* file, int line, const char* func, char* format, ...);
+// * Set minimum logging level at compile time
+#ifndef TOPAZ_MIN_LOGGING_LEVEL
+#define TOPAZ_MIN_LOGGING_LEVEL 30
+#endif
 
-#define LOG_DEBUG(format, ...) log_message(DEBUG, __FILENAME__, __LINE__, __FUNCTION__, format, ##__VA_ARGS__)
-#define LOG_INFO(format, ...)  log_message(INFO,  __FILENAME__, __LINE__, "", format, ##__VA_ARGS__)
-#define LOG_WARN(format, ...)  log_message(WARN,  __FILENAME__, __LINE__, __func__, format, ##__VA_ARGS__)
-#define LOG_ERROR(format, ...) log_message(ERROR, __FILENAME__, __LINE__, __func__, format, ##__VA_ARGS__)
+// * Logging functions
+void log_message_level(int level, const char* file, char* line, const char* func);
+void log_message(const char* code, int level, const char* file, char* line, const char* func);
+
+// * Logging macros
+#if TOPAZ_RUNTIME_LEVEL_CHANGE == 1
+#define LOG_LEVEL_STR(code, log_level, ...) \
+if (log_level >= application_logging_level) { \
+    log_message(code, log_level, __FILENAME__, TOSTRING(__LINE__), __FUNCTION__); \
+    printf(__VA_ARGS__);    \
+    printf("\n");                                \
+}
+#define LOG_LEVEL(log_level, ...) \
+if (log_level >= application_logging_level) { \
+    if (log_level < TOPAZ_MIN_LOGGING_LEVEL) { printf("META: This log has a level lower than the MIN_LOGGING_LEVEL. Some logs may be missing.\n"); } \
+    log_message_level(log_level, __FILENAME__, TOSTRING(__LINE__), __FUNCTION__); \
+    printf(__VA_ARGS__);    \
+    printf("\n");\
+}
+#else
+#define LOG_LEVEL_STR(code, log_level, ...) \
+log_message(code, log_level, __FILENAME__, TOSTRING(__LINE__), __FUNCTION__); \
+printf(__VA_ARGS__);    \
+printf("\n");
+
+#define LOG_LEVEL(log_level, ...) \
+log_message_level(log_level, __FILENAME__, TOSTRING(__LINE__), __FUNCTION__); \
+printf(__VA_ARGS__);    \
+printf("\n");
+#endif
 
 #endif //TOPAZ_TOPAZ_H

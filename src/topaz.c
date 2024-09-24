@@ -1,52 +1,41 @@
+#ifndef TOPAZ_TOPAZ_C
+#define TOPAZ_TOPAZ_C
+
 #include "../include/topaz.h"
+#include "custom_printf.h"
+#include "levels_lut.h"
 
-Level application_logging_level = WARN;
+#if TOPAZ_RUNTIME_LEVEL_CHANGE == 1
+int application_logging_level = TOPAZ_MIN_LOGGING_LEVEL;
+#endif
 
-void set_application_logging_level(Level level) {
+// * Define function to set the logging level during runtime
+// If runtime level evaluation is disabled, set the function to do nothing
+void set_application_logging_level(int level) {
+#if (TOPAZ_RUNTIME_LEVEL_CHANGE == 1)
     application_logging_level = level;
+#endif
 }
 
-static void current_time(char* buffer, size_t len) {
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-    strftime(buffer, len, "%Y-%m-%d %H:%M:%S", t);
+
+void log_message_level(int level, const char* file, char* line, const char* func) {
+    const char* lut_code;
+    if (level < TOPAZ_LUT_SIZE) {
+        lut_code = lut[level];
+        // If first char != 0, then entry exists in LUT
+        if (*lut_code != 0) {
+            log_message(lut_code, level, file, line, func);
+            return;
+        }
+    }
+
+    char code[2];
+    sprintf(code, "%d", level);
+    log_message(code, level, file, line, func);
 }
 
-void log_message(Level level, const char* file, int line, const char* func, char* format, ...) {
-    va_list args;
-    va_start(args, format);
-
-    if (level < application_logging_level) {
-        return;
-    }
-    char time_buffer[20];
-    current_time(time_buffer, sizeof(time_buffer));
-
-    char line_buffer[10];
-    sprintf(line_buffer, "%d", line);
-
-    char empty = '\0';
-    const char* values[5];
-    values[0] = &empty;
-    values[1] = &empty;
-    values[2] = &empty;
-    values[3] = &empty;
-    values[4] = &empty;
-
-    if (LOG_FORMAT_FILE_INDEX != 0) {
-        values[LOG_FORMAT_FILE_INDEX - 1] = file;
-    }
-    if (LOG_FORMAT_LINE_INDEX != 0) {
-        values[LOG_FORMAT_LINE_INDEX - 1] = line_buffer;
-    }
-    if (LOG_FORMAT_FUNCTION_INDEX != 0) {
-        values[LOG_FORMAT_FUNCTION_INDEX - 1] = func;
-    }
-    if (LOG_FORMAT_TIME_INDEX != 0) {
-        values[LOG_FORMAT_TIME_INDEX - 1] = time_buffer;
-    }
-
-    printf(LOG_FORMAT, values[0], values[1], values[2], values[3], values[4]);
-    vprintf(format, args);
-    printf("\n");
+void log_message(const char* code, int level, const char* file, char* line, const char* func) {
+    generated_print_strings(code, file, func, line);
 }
+
+#endif
