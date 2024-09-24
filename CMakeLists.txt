@@ -5,6 +5,9 @@ project(Topaz VERSION 1.0.0)
 
 set(GENERATED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
+# When using makefiles, it can error if this directory is not present
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gen)
+
 # * Process the configuration file
 # This is for reading the config file, outputting the values to cmake, and setting them as C macro directives
 execute_process(
