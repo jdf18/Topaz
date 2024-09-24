@@ -6,6 +6,7 @@ def parse_json(path):
     with open(path) as file:
         return json.loads(file.read())
 
+
 # noinspection t
 def generate_printf_code(format_string: str, time_format: str):
     # PATH, FILE, FUNC, LINE, TIME, CODE
@@ -73,7 +74,7 @@ def generate_printf_code(format_string: str, time_format: str):
     char* file = last_slash ? last_slash + 1 : path;
     '''
 
-    with open("generated_printf_code.c", 'w') as file:
+    with open("logging_printf.c", 'w') as file:
         file.write(f'''
 #include <stdlib.h>
 #include <stdio.h>
@@ -163,7 +164,9 @@ static const char* lut[] = {{
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 3:
+        results = []
+
         config_file_path = sys.argv[1]
         gen_file_dir = sys.argv[2]
         src_file_dir = sys.argv[3]
@@ -173,6 +176,5 @@ if __name__ == "__main__":
         generate_printf_code(config['formatting']['message'], config['formatting']['time'])
 
         generate_header(config['levels'], src_file_dir)
-
         generate_lut(config['levels'], src_file_dir)
 

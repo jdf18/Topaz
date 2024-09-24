@@ -24,34 +24,20 @@
 #define TOPAZ_TIME_FORMAT "%Y-%m-%d %H:%M:%S"
 #endif
 
-// * Set default logging levels
-//#ifndef TOPAZ_DEBUG
-//#define TOPAZ_DEBUG 10
-//#endif
-//#ifndef TOPAZ_INFO
-//#define TOPAZ_INFO 20
-//#endif
-//#ifndef TOPAZ_WARN
-//#define TOPAZ_WARN 30
-//#endif
-//#ifndef TOPAZ_ERROR
-//#define TOPAZ_ERROR 40
-//#endif
+// * Set default value for runtime logging level changes
+#ifndef TOPAZ_RUNTIME_LEVEL_CHANGE
+#define TOPAZ_RUNTIME_LEVEL_CHANGE 1
+#endif
+
+// Runtime logging level
+#if (TOPAZ_RUNTIME_LEVEL_CHANGE == 1)
+extern int application_logging_level;
+#endif
+void set_application_logging_level(int level);
 
 // * Set minimum logging level at compile time
 #ifndef TOPAZ_MIN_LOGGING_LEVEL
 #define TOPAZ_MIN_LOGGING_LEVEL 30
-#endif
-
-// * Set default value for runtime logging level changes
-#ifndef TOPAZ_RUNTIME_LEVEL_CHANGE
-#define TOPAZ_RUNTIME_LEVEL_CHANGE true
-#endif
-
-// Runtime logging level
-#if TOPAZ_RUNTIME_LEVEL_CHANGE == true
-extern int application_logging_level;
-void set_application_logging_level(int level);
 #endif
 
 // * Logging functions
@@ -59,7 +45,7 @@ void log_message_level(int level, const char* file, char* line, const char* func
 void log_message(const char* code, int level, const char* file, char* line, const char* func);
 
 // * Logging macros
-#if TOPAZ_RUNTIME_LEVEL_CHANGE == true
+#if TOPAZ_RUNTIME_LEVEL_CHANGE == 1
 #define LOG_LEVEL_STR(code, log_level, ...) \
 if (log_level >= application_logging_level) { \
     log_message(code, log_level, __FILENAME__, TOSTRING(__LINE__), __FUNCTION__); \
@@ -84,31 +70,5 @@ log_message_level(log_level, __FILENAME__, TOSTRING(__LINE__), __FUNCTION__); \
 printf(__VA_ARGS__);    \
 printf("\n");
 #endif
-
-// Default logging macro names
-// todo: Allow these to be changed/removed
-//#if TOPAZ_DEBUG >= TOPAZ_MIN_LOGGING_LEVEL
-//#define LOG_DEBUG(...) LOG_LEVEL_STR("DEBUG", TOPAZ_DEBUG,##__VA_ARGS__)
-//#else
-//#define LOG_DEBUG(...)
-//#endif
-//
-//#if TOPAZ_INFO >= TOPAZ_MIN_LOGGING_LEVEL
-//#define LOG_INFO(...)  LOG_LEVEL_STR("INFO", TOPAZ_INFO,##__VA_ARGS__)
-//#else
-//#define LOG_INFO(...)
-//#endif
-//
-//#if TOPAZ_WARN >= TOPAZ_MIN_LOGGING_LEVEL
-//#define LOG_WARN(...)  LOG_LEVEL_STR("WARN", TOPAZ_WARN,##__VA_ARGS__)
-//#else
-//#define LOG_WARN(...)
-//#endif
-//
-//#if TOPAZ_ERROR >= TOPAZ_MIN_LOGGING_LEVEL
-//#define LOG_ERROR(...) LOG_LEVEL_STR("ERROR", TOPAZ_ERROR,##__VA_ARGS__)
-//#else
-//#define LOG_ERROR(...)
-//#endif
 
 #endif //TOPAZ_TOPAZ_H

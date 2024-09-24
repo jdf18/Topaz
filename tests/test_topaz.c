@@ -2,7 +2,7 @@
 #include "../include/topaz_levels.h"
 
 int main() {
-    set_application_logging_level(2);
+    set_application_logging_level(20);
 
     LOG_LEVEL(5, "test")
     LOG_LEVEL(10, "test")

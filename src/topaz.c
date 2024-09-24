@@ -1,18 +1,24 @@
+#ifndef TOPAZ_TOPAZ_C
+#define TOPAZ_TOPAZ_C
+
 #include "../include/topaz.h"
 #include "custom_printf.h"
 #include "levels_lut.h"
 
-#if TOPAZ_RUNTIME_LEVEL_CHANGE == true
+#if TOPAZ_RUNTIME_LEVEL_CHANGE == 1
 int application_logging_level = TOPAZ_MIN_LOGGING_LEVEL;
-
-void set_application_logging_level(int level) {
-    application_logging_level = level;
-}
 #endif
+
+// * Define function to set the logging level during runtime
+// If runtime level evaluation is disabled, set the function to do nothing
+void set_application_logging_level(int level) {
+#if (TOPAZ_RUNTIME_LEVEL_CHANGE == 1)
+    application_logging_level = level;
+#endif
+}
 
 
 void log_message_level(int level, const char* file, char* line, const char* func) {
-    // todo: Poll generated file to test if level has a name
     const char* lut_code;
     if (level < TOPAZ_LUT_SIZE) {
         lut_code = lut[level];
@@ -31,3 +37,5 @@ void log_message_level(int level, const char* file, char* line, const char* func
 void log_message(const char* code, int level, const char* file, char* line, const char* func) {
     generated_print_strings(code, file, func, line);
 }
+
+#endif
