@@ -11,8 +11,8 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gen)
 # * Process the configuration file
 # This is for reading the config file, outputting the values to cmake, and setting them as C macro directives
 execute_process(
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/output_config_directives.py logging_conf.json
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/output_config_directives.py ${CMAKE_SOURCE_DIR}/logging_conf.json
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         # Store the text output into the variable PYTHON_OUTPUT
         OUTPUT_VARIABLE PYTHON_OUTPUT
         ERROR_VARIABLE script_error
@@ -57,6 +57,12 @@ add_library(Topaz STATIC
 
 target_include_directories(Topaz PRIVATE ${GENERATED_BINARY_DIR})
 target_include_directories(Topaz PUBLIC include)
+
+# Set the C macro directives for source files linking to this project
+if(script_result EQUAL 0)
+    target_compile_definitions(Topaz PUBLIC TOPAZ_RUNTIME_LEVEL_CHANGE=${RUNTIME_LEVEL_EVAL})
+    target_compile_definitions(Topaz PUBLIC TOPAZ_MIN_LOGGING_LEVEL=${MINIMUM_LEVEL})
+endif()
 
 # * ===== LIBRARY INSTALLATION =====
 
