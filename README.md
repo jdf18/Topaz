@@ -136,4 +136,4 @@ LOG_FATAL("Unexpected system shutdown");
 
 ## License
 
-Topaz is licensed under the GPL-3.0 license. See the [LICENSE](https://github.com/jdf18/Topaz/blob/main/LICENSE) file for more details.
+Topaz is licensed under the GNU LGPLv3 license. See the [LICENSE](https://github.com/jdf18/Topaz/blob/main/LICENSE) file for more details.
