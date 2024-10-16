@@ -5,48 +5,25 @@ project(Topaz VERSION 1.0.0)
 
 set(GENERATED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
+set(TOPAZ_CONFIG_FILE ${CMAKE_SOURCE_DIR}/logging_conf.json)
 # When using makefiles, it can error if this directory is not present
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
-# * Process the configuration file
-# This is for reading the config file, outputting the values to cmake, and setting them as C macro directives
-execute_process(
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/output_config_directives.py ${CMAKE_SOURCE_DIR}/logging_conf.json
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        # Store the text output into the variable PYTHON_OUTPUT
-        OUTPUT_VARIABLE PYTHON_OUTPUT
-        ERROR_VARIABLE script_error
-        RESULT_VARIABLE script_result
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-if(script_result EQUAL 0)
-    message(STATUS "Python script executed successfully: ${PYTHON_OUTPUT}")
+# * ===== PROCESS CONFIGURATION FILE =====
+# This is done during configuration time, so CMake must be run if the configuration file changes.
 
-    # Split the resulting string at each semicolon and split up the resulting list
-    string(REGEX MATCHALL "[^;]+" PYTHON_VALUES_LIST "${PYTHON_OUTPUT}")
+include(config.cmake)
+topaz_conf_parse_file(${TOPAZ_CONFIG_FILE} topaz_configuration)
 
-    list(GET PYTHON_VALUES_LIST 0 RUNTIME_LEVEL_EVAL)
-    list(GET PYTHON_VALUES_LIST 1 MINIMUM_LEVEL)
+message("Configuration file version: " ${TOPAZ_CONFIG_VER})
+message("Topaz library version: " ${TOPAZ_LIBRARY_VERSION})
 
-    message(STATUS "TOPAZ_RUNTIME_LEVEL_CHANGE: ${RUNTIME_LEVEL_EVAL}")
-    message(STATUS "TOPAZ_MIN_LOGGING_LEVEL: ${MINIMUM_LEVEL}")
-
-    # Set the C macro directives
-    add_definitions(-DTOPAZ_RUNTIME_LEVEL_CHANGE=${RUNTIME_LEVEL_EVAL})
-    add_definitions(-DTOPAZ_MIN_LOGGING_LEVEL=${MINIMUM_LEVEL})
+if(NOT "${TOPAZ_CONFIG_VER}" VERSION_LESS_EQUAL "${TOPAZ_LIBRARY_VERSION}")
+    message(FATAL_ERROR "Configuration file version ${TOPAZ_CONFIG_VER} is greater than the library version ${TOPAZ_LIBRARY_VERSION}. \
+    Please change the configuration file or use a newer version of the library.")
 else()
-    # If any errors, return
-    message(FATAL_ERROR "Python script failed: ${script_error}")
+    message(STATUS "Configuration file version is compatible with the library version.")
 endif()
-
-# Generate the custom print function in /gen/logging_printf.c and the levels macros
-add_custom_command(
-        OUTPUT ${GENERATED_BINARY_DIR}/logging_printf.c ${GENERATED_BINARY_DIR}/topaz_levels.h
-        DEPENDS ${CMAKE_SOURCE_DIR}/logging_conf.json
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/generate_source_code.py ${CMAKE_SOURCE_DIR}/logging_conf.json ${GENERATED_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
-        WORKING_DIRECTORY ${GENERATED_BINARY_DIR}
-        COMMENT "generating src/generated_printf_code.c"
-)
 
 # * ==== COMPILE TOPAZ LIBRARY =====
 
@@ -59,10 +36,8 @@ target_include_directories(Topaz PRIVATE ${GENERATED_BINARY_DIR})
 target_include_directories(Topaz PUBLIC include)
 
 # Set the C macro directives for source files linking to this project
-if(script_result EQUAL 0)
-    target_compile_definitions(Topaz PUBLIC TOPAZ_RUNTIME_LEVEL_CHANGE=${RUNTIME_LEVEL_EVAL})
-    target_compile_definitions(Topaz PUBLIC TOPAZ_MIN_LOGGING_LEVEL=${MINIMUM_LEVEL})
-endif()
+target_compile_definitions(Topaz PUBLIC TOPAZ_RUNTIME_LEVEL_CHANGE=${RUNTIME_LEVEL_EVAL})
+target_compile_definitions(Topaz PUBLIC TOPAZ_MIN_LOGGING_LEVEL=${MINIMUM_LEVEL})
 
 # * ===== LIBRARY INSTALLATION =====
 
