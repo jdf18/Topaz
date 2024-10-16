@@ -4,7 +4,9 @@ set (TOPAZ_LIBRARY_VERSION "0.1.0")
 
 set(GENERATED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
-set(TOPAZ_CONFIG_FILE ${CMAKE_SOURCE_DIR}/logging_conf.json)
+if (NOT DEFINED TOPAZ_CONFIG_FILE)
+    set(TOPAZ_CONFIG_FILE ${CMAKE_SOURCE_DIR}/logging_conf.json)
+endif()
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS TOPAZ_CONFIG_FILE)
 
 # When using makefiles, it can error if this directory is not present

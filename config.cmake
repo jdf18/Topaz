@@ -24,8 +24,8 @@ function(topaz_conf_parse_file filepath)
     # Generate the custom print function in /gen/logging_printf.c and the levels macros
     add_custom_command(
         OUTPUT ${GENERATED_BINARY_DIR}/logging_printf.c ${GENERATED_BINARY_DIR}/topaz_levels.h
-        DEPENDS ${CMAKE_SOURCE_DIR}/logging_conf.json
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/generate_source_code.py ${CMAKE_SOURCE_DIR}/logging_conf.json ${GENERATED_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${filepath}
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/generate_source_code.py ${filepath} ${GENERATED_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
         WORKING_DIRECTORY ${GENERATED_BINARY_DIR}
         COMMENT "generating src/generated_printf_code.c"
     )
