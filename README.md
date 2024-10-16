@@ -83,7 +83,7 @@ The JSON file should be structured like the following file: (see [default](https
 
 ```json
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
 
   "formatting": {
     "message": "%CODE: %FILE [%LINE] - %TIME: ",

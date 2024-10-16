@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(Topaz VERSION 1.0.0)
-set (TOPAZ_LIBRARY_VERSION "0.1.0")
+set (TOPAZ_LIBRARY_VERSION "1.0.0")
 
 set(GENERATED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
