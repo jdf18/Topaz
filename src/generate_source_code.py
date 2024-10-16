@@ -1,5 +1,6 @@
 import sys
 import json
+import yaml
 
 
 def parse_json(path):
@@ -7,117 +8,61 @@ def parse_json(path):
         return json.loads(file.read())
 
 
-# noinspection t
-def generate_printf_code(format_string: str, time_format: str):
+def parse_format(format_string):
     # PATH, FILE, FUNC, LINE, TIME, CODE
     form = ''
     args = []
     i = 0
 
     while i < len(format_string):
-        if format_string[i] != '%':
-            form += format_string[i]
-            i += 1
-            continue
-        else:
+        if format_string[i] == '%':
             i += 1
             assert i+3 < len(format_string)
             form += '%s'
-            if format_string[i:i+4] == "PATH":
-                args.append("path")
+            test_string = format_string[i:i+4]
+            if test_string in ["PATH", "FILE", "FUNC", "LINE", "TIME", "CODE"]:
+                args.append({
+                                "PATH": "path",
+                                "FILE": "file",
+                                "FUNC": "func",
+                                "LINE": "line",
+                                "TIME": "time_str",
+                                "CODE": "code"
+                            }[test_string])
                 i += 4
-                continue
-            if format_string[i:i+4] == "FILE":
-                args.append("file")
-                i += 4
-                continue
-            if format_string[i:i+4] == "FUNC":
-                args.append("func")
-                i += 4
-                continue
-            if format_string[i:i+4] == "LINE":
-                args.append("line")
-                i += 4
-                continue
-            if format_string[i:i+4] == "TIME":
-                args.append("timeb")
-                i += 4
-                continue
-            if format_string[i:i+4] == "CODE":
-                args.append("code")
-                i += 4
-                continue
-            print(format_string[i:i+4])
-            raise AssertionError()
+            else:
+                raise AssertionError(test_string)
+        else:
+            form += format_string[i]
+            i += 1
 
+    return args, form
+
+
+def generate_printf_code(format_string: str, time_format: str):
+    args, form = parse_format(format_string)
     arg_code = ''.join([', '+x for x in args])
 
     setup_code = ''
 
-    is_time_required = ("timeb" in args)
-    if is_time_required:
-        setup_code += f'''
-    char timeb[20];
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-    strftime(timeb, sizeof(timeb), "{time_format}", t);
-'''
-
-    is_file_required = ("file" in args)
-    if is_file_required:
-        setup_code += '''
-    char* last_slash = strrchr(path, '/');
-    if (!last_slash) {
-        last_slash = strrchr(path, '\\\\');
-    }
-
-    char* file = last_slash ? last_slash + 1 : path;
-    '''
+    if "time_str" in args:
+        setup_code += strings["time_setup_code"].format(time_format=time_format)
+    if "file" in args:
+        setup_code += strings["file_setup_code"]
 
     with open("logging_printf.c", 'w') as file:
-        file.write(f'''
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <time.h>
-#include "topaz.h"
-            
-void generated_print_strings(char* code, char* path, char* func, char* line) {{
-{setup_code}
-    printf("{form}"{arg_code});
-}}
-''')
+        file.write(strings["logging_printf"].format(setup_code=setup_code, form=form, arg_code=arg_code))
 
 
 def generate_header(levels: dict, src_file_dir):
     with open(src_file_dir+"/src/topaz.h.txt", 'r') as file:
         topaz_core = file.read()
 
-    template_log_no = '''
-#ifndef TOPAZ_{name}
-#define TOPAZ_{name} {value}
-#endif'''
-    log_nos = '\n'.join([template_log_no.format(name=k, value=v) for k, v in levels.items()])
+    log_nos = '\n'.join([strings["template_log_level_macro"].format(name=k, value=v) for k, v in levels.items()])
+    log_methods = '\n'.join([strings["template_log_macro"].format(name=k) for k in levels.keys()])
 
-    template_log_method = '''
-#if TOPAZ_{name} >= TOPAZ_MIN_LOGGING_LEVEL
-#define LOG_{name}(...) LOG_LEVEL_STR("{name}", TOPAZ_{name},##__VA_ARGS__)
-#else
-#define LOG_{name}(...)
-#endif'''
-    log_methods = '\n'.join([template_log_method.format(name=k) for k in levels.keys()])
+    file_contents = '\n'.join([strings["topaz_header_start"], log_nos, log_methods, strings["topaz_header_end"]])
 
-    file_contents = f'''
-{topaz_core}
-
-{log_nos}
-
-
-{log_methods}
-
-#endif //TOPAZ_TOPAZ_H
-        '''
     with open("topaz.h", 'w') as file:
         file.write(file_contents)
     with open(src_file_dir+"/include/topaz.h", 'w') as file:
@@ -170,6 +115,10 @@ if __name__ == "__main__":
         config_file_path = sys.argv[1]
         gen_file_dir = sys.argv[2]
         src_file_dir = sys.argv[3]
+
+        with open(src_file_dir+"/src/generation_strings.yaml", 'r') as file:
+            strings: dict[str] = yaml.safe_load(file)
+        del file
 
         config = parse_json(config_file_path)
 
