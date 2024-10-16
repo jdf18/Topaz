@@ -1,4 +1,3 @@
-
 #ifndef TOPAZ_TOPAZ_H
 #define TOPAZ_TOPAZ_H
 
@@ -72,10 +71,6 @@ printf(__VA_ARGS__);    \
 printf("\n");
 #endif
 
-//#endif //TOPAZ_TOPAZ_H
-
-
-
 #ifndef TOPAZ_DEBUG
 #define TOPAZ_DEBUG 10
 #endif
@@ -91,8 +86,6 @@ printf("\n");
 #ifndef TOPAZ_ERROR
 #define TOPAZ_ERROR 40
 #endif
-
-
 
 #if TOPAZ_DEBUG >= TOPAZ_MIN_LOGGING_LEVEL
 #define LOG_DEBUG(...) LOG_LEVEL_STR("DEBUG", TOPAZ_DEBUG,##__VA_ARGS__)
@@ -118,5 +111,5 @@ printf("\n");
 #define LOG_ERROR(...)
 #endif
 
+
 #endif //TOPAZ_TOPAZ_H
-        

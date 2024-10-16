@@ -5,9 +5,7 @@
 #include "custom_printf.h"
 #include "levels_lut.h"
 
-#if TOPAZ_RUNTIME_LEVEL_CHANGE == 1
 int application_logging_level = TOPAZ_MIN_LOGGING_LEVEL;
-#endif
 
 // * Define function to set the logging level during runtime
 // If runtime level evaluation is disabled, set the function to do nothing
