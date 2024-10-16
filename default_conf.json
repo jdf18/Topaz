@@ -1,4 +1,6 @@
 {
+  "version": "0.1.0",
+
   "formatting": {
     "message": "%CODE: %FILE [%LINE] - %TIME: ",
     "time": "%H.%M.%S"

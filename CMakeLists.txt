@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 project(Topaz VERSION 1.0.0)
-
-#set(CMAKE_C_STANDARD 11)
+set (TOPAZ_LIBRARY_VERSION "0.1.0")
 
 set(GENERATED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
 set(TOPAZ_CONFIG_FILE ${CMAKE_SOURCE_DIR}/logging_conf.json)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS TOPAZ_CONFIG_FILE)
+
 # When using makefiles, it can error if this directory is not present
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gen)
 
